@@ -23,7 +23,7 @@ class CarsWebDevTestApplicationTests {
 	private static final MediaType JSON_PATCH = new MediaType("application", "json-patch+json");
 	
 	@Test
-	public void shouldSaveTheCorrectCarModelHierarchy() throws Exception {
+	public void shouldSaveTheCorrectMakeAndModel() throws Exception {
 		this.mockMvc.perform( MockMvcRequestBuilders
 				.put("/api/v1/car")
 				.content("{\"model\": \"XC90\",\"colour\": \"Yellow\",\"year\": 2010,\"make\": {\"id\": 1,\"make\": \"Volvo\"}}")
@@ -42,7 +42,7 @@ class CarsWebDevTestApplicationTests {
 	}
 	
 	@Test
-	public void shouldUpdateTheGivenCarHierarchy() throws Exception {
+	public void shouldUpdateTheGivenProperty() throws Exception {
 		this.mockMvc.perform( MockMvcRequestBuilders
 				.patch("/api/v1/car/4")
 				.content("[{\"op\": \"replace\", \"path\": \"/colour\", \"value\": \"maroon\"}]")
@@ -53,7 +53,7 @@ class CarsWebDevTestApplicationTests {
 	}
 	
 	@Test
-	public void shouldDeleteTheGivenCarHierarchy() throws Exception {
+	public void shouldDeleteTheGivenCar() throws Exception {
 		this.mockMvc.perform( MockMvcRequestBuilders
 				.delete("/api/v1/car/S40"))
 				.andExpect(status().isAccepted());
