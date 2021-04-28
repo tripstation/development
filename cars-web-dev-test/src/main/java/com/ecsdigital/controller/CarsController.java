@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ecsdigital.entity.Car;
+import com.ecsdigital.entity.Model;
 import com.ecsdigital.service.CarService;
 import com.ecsdigital.service.DataMuseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,52 +37,50 @@ public class CarsController {
 	private DataMuseService dataMuseService;
 	
 	@GetMapping("/car/{id}")
-	public ResponseEntity<Car>getCarById(@PathVariable Long id) {
+	public ResponseEntity<Model>getMakeAndModelById(@PathVariable Long id) {
 		
-		Optional<Car> car = carService.findById(id);
-		if(car.isPresent()) {
-			logger.debug("Car model = " + car.get().getModel());
+		Optional<Model> model = carService.findModelById(id);
+		if(model.isPresent()) {
+			logger.debug("Model model = " + model.get().getModel());
 			logger.debug("call the DataMuse Service to get some names that sound like our car model");
-			String words = dataMuseService.getWords(car.get().getModel());
+			String words = dataMuseService.getWords(model.get().getModel());
 			logger.debug("got words as " + words);
-			car.get().setDescription(words);
-			return new ResponseEntity<Car>(car.get(),HttpStatus.OK);
+			model.get().setDescription(words);
+			return new ResponseEntity<Model>(model.get(),HttpStatus.OK);
 		} else {
-			System.out.println("got no car");
-			return new ResponseEntity<Car>(HttpStatus.NOT_FOUND);
+			logger.debug("got no car");
+			return new ResponseEntity<Model>(HttpStatus.NOT_FOUND);
 		}
 	}
 	
 	@PutMapping("/car")
-	ResponseEntity<Car> createCar(@RequestBody Car car) {
-		logger.debug("Calling createCar");
-		Car savedCar = carService.save(car);
-		logger.debug("colour = " + savedCar.getColour());
-		return new ResponseEntity<Car>(carService.save(car),HttpStatus.CREATED);
+	ResponseEntity<Model> createCarHierarchy(@RequestBody Model model) {
+		logger.debug("Calling createCarHierarchy got model as " + model.getModel());
+		return new ResponseEntity<Model>(carService.saveModel(model),HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/car/{model}")
-	public ResponseEntity<Long> deleteCarByModel(@PathVariable String model) {
+	public ResponseEntity<Long> deleteCarByModelHierarchy(@PathVariable String model) {
 		return new ResponseEntity<Long>(carService.deleteByModel(model),HttpStatus.ACCEPTED);
 	}
 	
 	@PatchMapping(path = "/car/{id}", consumes = "application/json-patch+json")
-	ResponseEntity<Car> changeCar(@PathVariable Long id, @RequestBody JsonPatch carPatch) {
-		logger.debug("Calling changeCar");
-			Optional<Car> car = carService.findById(id);
-			if(car.isPresent()) {
-				logger.debug("changeCar() car is " + car.get().getModel());
+	ResponseEntity<Model> changeCarHi(@PathVariable Long id, @RequestBody JsonPatch modelPatch) {
+		logger.debug("Calling changeCarHi");
+			Optional<Model> model = carService.findModelById(id);
+			if(model.isPresent()) {
+				logger.debug("changeModel() model is " + model.get().getModel());
 				try {
-					Car carPatched = carService.patchCar(carPatch, car);
-					logger.debug("patched car in controller = " + carPatched.getColour());
-					carService.save(carPatched);
-					return new ResponseEntity<Car>(carPatched,HttpStatus.OK);
+					Model modelPatched = carService.patchModel(modelPatch, model);
+					logger.debug("patched car in controller = " + modelPatched.getColour());
+					carService.saveModel(modelPatched);
+					return new ResponseEntity<Model>(modelPatched,HttpStatus.OK);
 				} catch (JsonPatchException | JsonProcessingException e) {
 					logger.debug(e.getMessage());
 					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 				}
 			} else {
-				return new ResponseEntity<Car>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<Model>(HttpStatus.NOT_FOUND);
 			}
 	}
 }

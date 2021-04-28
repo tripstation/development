@@ -6,9 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,28 +22,29 @@ class CarsWebDevTestApplicationTests {
 	private MockMvc mockMvc;
 	private static final MediaType JSON_PATCH = new MediaType("application", "json-patch+json");
 	
-	
 	@Test
-	public void shouldSaveTheCorrectCarModel() throws Exception {
+	public void shouldSaveTheCorrectCarModelHierarchy() throws Exception {
 		this.mockMvc.perform( MockMvcRequestBuilders
 				.put("/api/v1/car")
-				.content("{\"make\": \"Volvo\",\"model\": \"V60\",\"colour\": \"black\",\"year\": 2004}")
+				.content("{\"model\": \"XC90\",\"colour\": \"Yellow\",\"year\": 2010,\"make\": {\"id\": 1,\"make\": \"Volvo\"}}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 				.andDo(print()).andExpect(status().isCreated())
-				.andExpect(content().string(containsString("V60")));
+				.andExpect(content().string(containsString("XC90")))
+				.andExpect(content().string(containsString("Volvo")));
 	}
 	
 	@Test
-	public void shouldReturnTheCorrectModel() throws Exception {
+	public void shouldReturnTheCorrectMakeAndModel() throws Exception {
 		this.mockMvc.perform(get("/api/v1/car/1")).andDo(print()).andExpect(status().isOk())
-				.andExpect(content().string(containsString("V60")));
+				.andExpect(content().string(containsString("V60")))
+				.andExpect(content().string(containsString("Volvo")));
 	}
 	
 	@Test
-	public void shouldUpdateTheGivenCar() throws Exception {
+	public void shouldUpdateTheGivenCarHierarchy() throws Exception {
 		this.mockMvc.perform( MockMvcRequestBuilders
-				.patch("/api/v1/car/1")
+				.patch("/api/v1/car/4")
 				.content("[{\"op\": \"replace\", \"path\": \"/colour\", \"value\": \"maroon\"}]")
 				.contentType(JSON_PATCH)
 				.accept(JSON_PATCH))
@@ -54,9 +53,9 @@ class CarsWebDevTestApplicationTests {
 	}
 	
 	@Test
-	public void shouldDeleteTheGivenCar() throws Exception {
+	public void shouldDeleteTheGivenCarHierarchy() throws Exception {
 		this.mockMvc.perform( MockMvcRequestBuilders
-				.delete("/api/v1/car/V60"))
+				.delete("/api/v1/car/S40"))
 				.andExpect(status().isAccepted());
 	}
 }
