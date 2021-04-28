@@ -54,19 +54,17 @@ public class CarsController {
 	}
 	
 	@PutMapping("/car")
-	ResponseEntity<Model> createCarHierarchy(@RequestBody Model model) {
-		logger.debug("Calling createCarHierarchy got model as " + model.getModel());
+	ResponseEntity<Model> createCar(@RequestBody Model model) {
 		return new ResponseEntity<Model>(carService.saveModel(model),HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/car/{model}")
-	public ResponseEntity<Long> deleteCarByModelHierarchy(@PathVariable String model) {
+	public ResponseEntity<Long> deleteCarByModel(@PathVariable String model) {
 		return new ResponseEntity<Long>(carService.deleteByModel(model),HttpStatus.ACCEPTED);
 	}
 	
 	@PatchMapping(path = "/car/{id}", consumes = "application/json-patch+json")
-	ResponseEntity<Model> changeCarHi(@PathVariable Long id, @RequestBody JsonPatch modelPatch) {
-		logger.debug("Calling changeCarHi");
+	ResponseEntity<Model> changeCar(@PathVariable Long id, @RequestBody JsonPatch modelPatch) {
 			Optional<Model> model = carService.findModelById(id);
 			if(model.isPresent()) {
 				logger.debug("changeModel() model is " + model.get().getModel());
