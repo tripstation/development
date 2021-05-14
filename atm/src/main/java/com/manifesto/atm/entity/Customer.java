@@ -32,6 +32,18 @@ public class Customer {
 	public Customer() {
 		super();
 	}
+	
+	
+
+	public Customer(int accountNumber, int pin, int balance, int overdraftFacility) {
+		super();
+		this.accountNumber = accountNumber;
+		this.pin = pin;
+		this.balance = balance;
+		this.overdraftFacility = overdraftFacility;
+	}
+
+
 
 	public Long getId() {
 		return id;
@@ -90,6 +102,13 @@ public class Customer {
 		this.overDraftActive = overDraftActive;
 	}
 
+	@Override
+	public String toString() {
+		return "Customer [id=" + id + ", accountNumber=" + accountNumber + ", pin=" + pin + ", balance=" + balance
+				+ ", overdraftFacility=" + overdraftFacility + ", overDraftActive=" + overDraftActive
+				+ ", withdrawalAmount=" + withdrawalAmount + ", atm=" + atm + "]";
+	}
+
 	public Atm getAtm() {
 		return atm;
 	}
@@ -97,4 +116,6 @@ public class Customer {
 	public void setAtm(Atm atm) {
 		this.atm = atm;
 	}
+	
+	
 }

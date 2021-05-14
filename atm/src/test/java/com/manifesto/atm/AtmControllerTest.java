@@ -19,12 +19,23 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.manifesto.atm.service.BankService;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 class AtmControllerTest {
 	
 	@Autowired
 	private MockMvc mockMvc;
+	
+	
+	
+	@Test
+	public static void ShouldCorrectlyParseTheInputFile() throws Exception {
+		BankService bankService = new BankService();
+		bankService.parseTextFile();
+	}
+	
 	
 	@Disabled
 	@Test
@@ -55,7 +66,6 @@ class AtmControllerTest {
 		.andExpect(content().string(containsString("8000")));
 	}
 	
-
 	
 	@Disabled
 	@Test
@@ -84,7 +94,7 @@ class AtmControllerTest {
 //	}	
 	
 	
-//	@Disabled
+	@Disabled
 	@Test
 	public void shouldWithdrawTheCorrectAmountGivenFundsAvailable() throws Exception {
 		this.mockMvc.perform(MockMvcRequestBuilders
@@ -107,9 +117,64 @@ class AtmControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 				.andDo(print()).andExpect(status().isOk())
-				.andExpect(content().string(containsString("500")))
-				.andExpect(content().string(containsString("8000")))
+				.andExpect(content().string(containsString("496")))
+				.andExpect(content().string(containsString("7993")))
 				.andExpect(content().string(containsString("100")));
+	}
+	
+//	8000
+//	12345678 1234 1234
+	@Disabled
+	@Test
+	public void ShouldIndicateABalanceHasBeenRequestedtextTest() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/textTest/")
+				.content("8000\n 12345678 1234 1234")
+				.contentType(MediaType.TEXT_PLAIN)
+				.accept(MediaType.TEXT_PLAIN))
+				.andExpect(content().string(containsString("496")))
+				.andDo(print()).andExpect(status().isOk());
+	}
+	@Disabled
+	@Test
+	public void shoudReturnAnAccountErrorGivenInCorrectPinTextTest() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/textTest/")
+				.content("8000\n 12345678 1234 1235")
+				.contentType(MediaType.TEXT_PLAIN)
+				.accept(MediaType.TEXT_PLAIN))
+				.andExpect(content().string(containsString("ACCOUNT_ERR")))
+				.andDo(print()).andExpect(status().isUnauthorized());
+	}
+	
+	@Disabled
+	@Test
+	public void shoudReturnCurrentBalenceAndOverDraftAndTotalCashGivenCorrectAccountNumAndPinWenText() throws Exception{
+//		12345678 1234	 1234
+		this.mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/balanceText/12345678")
+//				.content("{\"accountNumber\": 12345678, \"pin\": 1234}")
+//				.content("accountNumber : 12345678, pin: 1234")
+				.contentType(MediaType.TEXT_PLAIN)
+				.accept(MediaType.TEXT_PLAIN))
+				.andDo(print()).andExpect(status().isOk())
+				.andExpect(content().string(containsString("496")))
+				.andExpect(content().string(containsString("7993")))
+				.andExpect(content().string(containsString("100")));
+	}
+	
+//	.content("8000\n 12345678 1234 1234")
+//	.content("{\"accountNumber\": 99999999, \"pin\": 9999, \"withdrawalAmount\" : 1}")
+	@Disabled
+	@Test
+	public void shouldWithdrawTheCorrectAmountGivenFundsAvailableText() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/customer/withdrawText")
+				.content("8000\\n 99999999 1234 1234 1")
+				.contentType(MediaType.TEXT_PLAIN)
+				.accept(MediaType.TEXT_PLAIN))
+				.andDo(print()).andExpect(status().isOk())
+				.andExpect(content().string(containsString("597")));
 	}
 	
 }

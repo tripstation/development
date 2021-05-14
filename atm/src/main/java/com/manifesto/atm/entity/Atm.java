@@ -17,16 +17,12 @@ public class Atm {
 	@GeneratedValue
 	@Id
 	private Long id;
-//	private int accountNumber;
 	private int totalCash;
-//	private int pin;
-//	private int balance;
-//	private int overdraftFacility;
 	
 //	@Transient
 //	private int withdrawalAmount; 
 	
-	@JsonIgnore
+//	@JsonIgnore
 	@OneToMany(mappedBy = "atm", cascade = CascadeType.ALL)
 	private List<Customer> customer; 
 	
@@ -34,6 +30,13 @@ public class Atm {
 	public Atm() {
 		super();
 	}
+	
+	public Atm(int totalCash) {
+		super();
+		this.totalCash = totalCash;
+	}
+
+
 
 	public List<Customer> getCustomer() {
 		return customer;
