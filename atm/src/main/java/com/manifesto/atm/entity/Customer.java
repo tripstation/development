@@ -32,8 +32,6 @@ public class Customer {
 	public Customer() {
 		super();
 	}
-	
-	
 
 	public Customer(int accountNumber, int pin, int balance, int overdraftFacility) {
 		super();
@@ -42,8 +40,6 @@ public class Customer {
 		this.balance = balance;
 		this.overdraftFacility = overdraftFacility;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -116,6 +112,5 @@ public class Customer {
 	public void setAtm(Atm atm) {
 		this.atm = atm;
 	}
-	
 	
 }

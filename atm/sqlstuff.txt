@@ -1,0 +1,66 @@
+Example test Input
+8000
+/n
+12345678 1234 1234
+500 100
+B
+W 100
+
+/n
+
+87654321 4321 4321
+100 0
+W 10
+/n
+87654321 4321 4321
+0 0
+W 10
+B
+
+sql
+--insert into model (id, colour, model , year , make_id ) values (1, 'Red', 'V60', 2015,1) 
+select  model.model, model.colour, model.year , make.make from model  inner join make on make.id = model.id
+insert into atm (account_number, balance, pin, total_cash ) values (12345678, 500, 'V60', 2015,1)
+insert into atm (total_cash ) values (800) 
+insert into customer (
+
+put 
+{
+    "model": "S40",
+    "colour": "Yellow",
+    "year": 2010,
+    "make": {
+            "id": 1,
+            "make": "Volvo"
+        }
+}
+
+
+{
+    "accountNumber": 12345678,
+    "pin": 1234,
+    "balance" : 500,
+    "overdraftFacility" : 100
+    "atm": {
+            "id": 1,
+	    "totalCash" : 8000,
+        }
+} 
+
+1) Get balance : done
+2) check test input :-
+Check if new session : done
+Check for ongoing session : done
+a) check account number  : done
+i) get customer by account number : done
+ii)  check pin number : done
+iii) withdraw -
+balance should be positive
+if we use overdraft it should be negative
+iv) do transaction
+v) return output
+
+12345678 1234	 1234
+
+customer doesn't need to store pin
+
