@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Atm {
 	
@@ -15,7 +17,7 @@ public class Atm {
 	@Id
 	private Long id;
 	private int totalCash;
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "atm", cascade = CascadeType.ALL)
 	private List<Customer> customer; 
 	

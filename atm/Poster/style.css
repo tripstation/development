@@ -1,0 +1,58 @@
+.box {
+    width: 600px;
+    height: 800px;
+    border: 5px solid black;
+    margin: 20px auto;
+  }
+  .rect1, .rect2, .rect3 {
+    width: 200px;
+    height: 800px;
+  }
+  .rect1 {
+    background-color: #f5d742;
+    width: 20px;
+    position: relative;
+  }
+  .rect2 {
+    background-color: #446344;
+    position: relative;
+    bottom: 800px;
+    left: 20px;
+    width: 400px;
+  }
+  .rect3 {
+    background-color: #1269b0;
+    position: relative;
+    width: 200px;
+    bottom: 1600px;
+    left: 400px;
+  }
+  .text1 {
+    position: relative;
+    left: 20px;
+    bottom: 1850px;
+  }
+  .text2 {
+    position: relative;
+    font-weight:bold;
+    left: 345px;
+    bottom: 1910px;
+  }
+  .text3 {
+    position: relative;
+    bottom: 1980px;
+    left: 405px;
+  }
+  .text4 {
+    position: relative;
+    left: 405px;
+    bottom: 1970px;
+  }
+  .text5 {
+    position: relative;
+    font-weight: bold;
+    left: 340px;
+    bottom: 2020px;
+
+
+  }

@@ -42,7 +42,6 @@ public class BankService {
 		return atmRepository.save(atm);
 	}
 	
-	// why are we doing this?
 	public Optional<Atm> findCustomerById(Long id) {
 		return atmRepository.findById(id);
 	}
@@ -106,12 +105,10 @@ public class BankService {
 						logger.info("" + aCustomer.getBalance());
 						
 					} else if (inputOperationArray[i].startsWith("W")) {
-//						logger.info("got a W operation doing a withdrawal");
 						String [] amountArray = inputOperationArray[i].split(" ");
 						int withdrawalAmount = Integer.parseInt(amountArray[1].trim());
 						logger.debug("got withdrwawal amount as " + withdrawalAmount);
 						if(aCustomer.getAtm().getTotalCash() - withdrawalAmount > 0) {
-//							int balance =  (aCustomer.isOverDraftActive()) ?   aCustomer.getBalance() :  aCustomer.getBalance() + aCustomer.getOverdraftFacility();
 							int balance =  aCustomer.getBalance();
 							logger.debug("we just set balance to " + balance);
 							logger.debug("is overdraft active " + aCustomer.isOverDraftActive());
@@ -160,7 +157,6 @@ public class BankService {
 					logger.debug("atm total cash = " + aAtm.getTotalCash());
 					Customer newCustomer = new Customer(accountNumber,correctPin,accountBalance,overDraftFacility);
 					newCustomer.setAtm(aAtm);
-					//set tx flag ++
 					saveCustomer(newCustomer);
 					createNewCustomer(inputOperationArray);
 				} else{ 
@@ -171,6 +167,5 @@ public class BankService {
 			logger.debug("pins don't match return error");
 			logger.debug(ACCOUNT_ERR);
 		}
-		
 	}
 }
