@@ -8,3 +8,4 @@ Go into the test directory.
 The AtmControllerTest can be run from the src/test/java directory as Junit tests.
 Firstly the unit tests run.
 Then the file atm.txt that contains the input data is parsed and the account transactions processed.
+Further Bank transactions can be added here at will.
