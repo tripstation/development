@@ -29,8 +29,6 @@ public class AtmController {
  
 	private static final Logger logger = LoggerFactory.getLogger(AtmController.class);
 	private static final String ACCOUNT_ERR = "ACCOUNT_ERR";
-	private static final String FUNDS_ERR = "FUNDS_ERR";
-	private static final String ATM_ERR = "ATM_ERR";
 
 	@PutMapping("/customer")
 	public ResponseEntity<Customer> createCustomer (@RequestBody Customer customer) {

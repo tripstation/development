@@ -138,42 +138,14 @@ public class BankService {
 				for(int i = 2;i < inputOperationArray.length; i ++) {
 					logger.debug("inputOperationArray element [i] = " + inputOperationArray[i]);
 					if ( inputOperationArray[i].startsWith("B")) {
-						logger.debug("got a B operation doing a balance");
 						logger.info("" + aCustomer.getBalance());
-						
 					} else if (inputOperationArray[i].startsWith("W")) {
 						String [] amountArray = inputOperationArray[i].split(" ");
 						int withdrawalAmount = Integer.parseInt(amountArray[1].trim());
 						logger.debug("got withdrwawal amount as " + withdrawalAmount);
-						
 						if(aCustomer.getAtm().getTotalCash() - withdrawalAmount > 0) {
-							int balance =  aCustomer.getBalance();
-							logger.debug("we just set balance to " + balance);
-							logger.debug("is overdraft active " + aCustomer.isOverDraftActive());
-							if(withdrawalAmount <= balance) {
-								logger.debug("we will still be in credit");
-								aCustomer.setBalance(balance - withdrawalAmount);
-								//decrement atm cash total by withdrawal amount
-								aCustomer.getAtm().setTotalCash(aCustomer.getAtm().getTotalCash() - withdrawalAmount);
-								logger.debug("we have set the total cash in the atm to " + aCustomer.getAtm().getTotalCash());
-								saveCustomer(aCustomer);
-								balance = aCustomer.getBalance();
-								logger.info("" + balance);
-							} else {
-								// see if we have an overdraft facility if so add it to the balance and try again
-								
-								if(withdrawalAmount <= aCustomer.getOverdraftFacility()) {
-									logger.debug("using overdraft");
-									aCustomer.setOverdraftFacility(aCustomer.getOverdraftFacility() - withdrawalAmount);
-									logger.debug("we just set the overdraft to " + aCustomer.getOverdraftFacility());
-									aCustomer.setBalance(aCustomer.getBalance() - withdrawalAmount);
-									logger.debug("we just set the balance to " + aCustomer.getBalance());
-									logger.info("" + aCustomer.getBalance());
-									saveCustomer(aCustomer);
-								} else {
-									logger.info(FUNDS_ERR);
-								}
-							} 
+							aCustomer.setWithdrawalAmount(withdrawalAmount);
+							aCustomer =  getCustomerBankBalance(aCustomer);
 						} else {
 							logger.debug("Atm is out of cash");
 							logger.info(ATM_ERR);
