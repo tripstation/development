@@ -29,6 +29,8 @@ public class AtmController {
  
 	private static final Logger logger = LoggerFactory.getLogger(AtmController.class);
 	private static final String ACCOUNT_ERR = "ACCOUNT_ERR";
+	private static final String FUNDS_ERR = "FUNDS_ERR";
+	private static final String ATM_ERR = "ATM_ERR";
 
 	@PutMapping("/customer")
 	public ResponseEntity<Customer> createCustomer (@RequestBody Customer customer) {
@@ -105,6 +107,7 @@ public class AtmController {
 	
 	@PostMapping("/customer/withdraw/{account}")
 	public ResponseEntity<Customer>withdrawFunds(@RequestBody Customer bankCustomer, @PathVariable int account) {
+		logger.debug("withdrawFunds()");
 		logger.debug("got arg account as " + account);
 		logger.debug("got bankCustomer pin as " + bankCustomer.getPin());
 		Optional<Customer> customer = bankService.findCustomerByAccountNumber(account);
@@ -116,29 +119,11 @@ public class AtmController {
 				logger.debug("we want to withdraw " + bankCustomer.getWithdrawalAmount());
 				//do withdrawal but first check the total amount of cash in the atm
 				if(aCustomer.getAtm().getTotalCash() - bankCustomer.getWithdrawalAmount() > 0) {
-					int balance =  (aCustomer.isOverDraftActive()) ?   aCustomer.getBalance() :  aCustomer.getBalance() + aCustomer.getOverdraftFacility();
-					logger.debug("we just balance to " + balance);
-					logger.debug("is overdraft active " + aCustomer.isOverDraftActive());
-					if(bankCustomer.getWithdrawalAmount() < balance) {
-						//check withdrawl amount is less than balance + overdraft
-						logger.debug("we will still be in credit");
-						aCustomer.setBalance(balance - bankCustomer.getWithdrawalAmount());
-						logger.debug("account balance = " + aCustomer.getBalance());
-						//create a new customer object with the new balance and save it
-						//decrement atm cash total by withdrawal amount
-						aCustomer.getAtm().setTotalCash(aCustomer.getAtm().getTotalCash() - bankCustomer.getWithdrawalAmount());
-						logger.debug("we have set the total cash in the atm to " + aCustomer.getAtm().getTotalCash());
-						if(! aCustomer.isOverDraftActive()) {
-							aCustomer.setOverDraftActive(true);
-						}
-						bankService.saveCustomer(aCustomer);
-						
-						return new ResponseEntity<Customer>(aCustomer,HttpStatus.OK);
-				} else {
-					logger.debug("we will be over the agreed limit");
-					}
+					aCustomer.setWithdrawalAmount(bankCustomer.getWithdrawalAmount());
+					aCustomer =  bankService.getCustomerBankBalance(aCustomer);
 				} else {
 					logger.debug("Atm is out of cash");
+					return new ResponseEntity<Customer>(HttpStatus.EXPECTATION_FAILED);
 				}
 			} else {
 				logger.debug("pins don't match");
@@ -150,5 +135,4 @@ public class AtmController {
 			return new ResponseEntity<Customer>(HttpStatus.NOT_FOUND);
 		}
 	}
-	
 }

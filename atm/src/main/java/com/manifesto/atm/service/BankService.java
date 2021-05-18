@@ -75,8 +75,45 @@ public class BankService {
 		}
 		return(atmList);
 	}
-
-	public void createNewCustomer(String[] inputOperationArray) {
+	
+	public Customer getCustomerBankBalance(Customer customer) {
+		
+		int balance =  customer.getBalance();
+		int withdrawalAmount = customer.getWithdrawalAmount();
+		logger.debug("we just set balance to " + balance);
+		logger.debug("is overdraft active " + customer.isOverDraftActive());
+		if(withdrawalAmount <= balance) {
+			logger.debug("we will still be in credit");
+			customer.setBalance(balance - withdrawalAmount);
+			//decrement atm cash total by withdrawal amount
+			customer.getAtm().setTotalCash(customer.getAtm().getTotalCash() - withdrawalAmount);
+			logger.debug("we have set the total cash in the atm to " + customer.getAtm().getTotalCash());
+			saveCustomer(customer);
+			balance = customer.getBalance();
+			logger.info("" + balance);
+		} else {
+			// see if we have an overdraft facility if so add it to the balance and try again
+			
+			if(withdrawalAmount <= (customer.getOverdraftFacility() + customer.getBalance())) {
+				logger.debug("using overdraft");
+				customer.setOverDraftActive(true);
+				customer.setOverdraftFacility(customer.getOverdraftFacility() - withdrawalAmount);
+				logger.debug("we just set the overdraft to " + customer.getOverdraftFacility());
+				customer.setBalance(customer.getBalance() - withdrawalAmount);
+				//decrement atm cash total by withdrawal amount
+				customer.getAtm().setTotalCash(customer.getAtm().getTotalCash() - withdrawalAmount);
+				logger.debug("we just set the balance to " + customer.getBalance());
+				logger.info("" + customer.getBalance());
+				saveCustomer(customer);
+			} else {
+				logger.info(FUNDS_ERR);
+			}
+		}
+		logger.debug("getCustomerBankBalance() " + customer);
+		return customer;
+	}
+	
+	public void processAtmTransactions(String[] inputOperationArray) {
 		logger.debug("customerObjectArray element [0] = " + inputOperationArray[0]);
 		String [] urlArray = inputOperationArray[0].split(" "); //todo: handle new line
 		logger.debug("got arg 1 as " + urlArray[0]); // atm total cash
@@ -108,6 +145,7 @@ public class BankService {
 						String [] amountArray = inputOperationArray[i].split(" ");
 						int withdrawalAmount = Integer.parseInt(amountArray[1].trim());
 						logger.debug("got withdrwawal amount as " + withdrawalAmount);
+						
 						if(aCustomer.getAtm().getTotalCash() - withdrawalAmount > 0) {
 							int balance =  aCustomer.getBalance();
 							logger.debug("we just set balance to " + balance);
@@ -158,7 +196,7 @@ public class BankService {
 					Customer newCustomer = new Customer(accountNumber,correctPin,accountBalance,overDraftFacility);
 					newCustomer.setAtm(aAtm);
 					saveCustomer(newCustomer);
-					createNewCustomer(inputOperationArray);
+					processAtmTransactions(inputOperationArray);
 				} else{ 
 					logger.debug("got no ATM");
 				}

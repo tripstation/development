@@ -21,7 +21,8 @@ public class Customer {
 	@Column(nullable = true)
 	private boolean overDraftActive;
 	
-	@Transient
+//	@Transient
+	@Column(nullable = true)
 	private int withdrawalAmount;
 	
 	@ManyToOne

@@ -1,0 +1,18 @@
+# The ATM should not expose the customer balance if the pin is incorrect.
+
+
+* Given the user has entered the correct pin.
+* When the user requests a balance.
+* Then the Atm should show the available funds in the account.
+
+
+* Given the user has entered the incorrect correct pin.
+*  When the user requests a balance.
+* Then the Atm should show the ACCOUNT_ERR message. 
+
+
+
+
+
+
+
