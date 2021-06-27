@@ -1,6 +1,5 @@
 package com.floow.insurance.service;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,59 +17,48 @@ import org.springframework.stereotype.Service;
 
 import com.floow.insurance.model.Driver;
 
-//"D:\\development\\csv\\insurance.csv"
 @Service
 public class DriverService {
 	
 	private List<Driver> driverList = new ArrayList<Driver>();
 	private static final Logger logger = LoggerFactory.getLogger(DriverService.class);
-	private static final String driverFileName =  "D:\\development\\csv\\insurance2.csv";
-//	private static final String driverFileName =  "insurance3.csv";
+	private static final String  DRIVER_FILE_NAME  =  "insurance.csv";
 	
 	public Driver saveDriver(Driver newDriver) {
-		logger.debug("new driver passed in = " + newDriver);
 		List<Driver> existingDrivers = getDrivers();
-		logger.debug("existing drivers = " + existingDrivers);
 		Long sequenceId = generateNextSequenceId(existingDrivers);
-		logger.debug("sequence in service = " + sequenceId);
 		newDriver.setId(sequenceId);
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate creationDate = LocalDate.now();
-		newDriver.setCreationDate(creationDate);
+		newDriver.setCreationDate(LocalDate.now());
 		writeDriverToDisk(existingDrivers, newDriver);
-		
 		return newDriver;
 	}
+	
 	public List<Driver> getDrivers() {
 		return loadDriverFromDisk();
 	}
 	
-	public  List<Driver> loadDriverFromDisk() {
-		logger.debug("loadDriverFromDisk()");
+	public LocalDate stringToDate(String stringDate) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		/////
-		ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource(driverFileName).getFile());
-		////
-		try  (Stream<String> stream = Files.lines(Paths.get(driverFileName))) {
+		LocalDate  date = LocalDate.parse(stringDate,formatter);
+		return date;
+	}
+	
+	private  List<Driver> loadDriverFromDisk() {
+		
+		try  (Stream<String> stream = Files.lines(Paths.get(DRIVER_FILE_NAME))) {
 			driverList = stream.map(line -> {
 				String [] driverArray = line.split(",");
-				LocalDate  dateOfBirth = LocalDate.parse(driverArray[3], formatter);
-				LocalDate  creationDate = LocalDate.parse(driverArray[4], formatter);
-				Driver driver = new Driver(Long.valueOf(driverArray[0]), driverArray[1], driverArray[2],dateOfBirth,creationDate);
+				Driver driver = new Driver(Long.valueOf(driverArray[0]), driverArray[1], driverArray[2],stringToDate(driverArray[3]),stringToDate(driverArray[4]));
 				return driver;
 			}).collect(Collectors.toList());
 		} catch (IOException e) {
-			logger.debug("error reading driver file");
-			System.out.println(e.fillInStackTrace());
+			logger.error("error reading driver file",e);
 		}
 		return driverList;
 	}
 	
-	public void writeDriverToDisk(List<Driver> drivers, Driver newDriver) {
-		
-		try (FileWriter fileWriter = new FileWriter(driverFileName,true)) {
-			
+	private void writeDriverToDisk(List<Driver> drivers, Driver newDriver) {
+		try (FileWriter fileWriter = new FileWriter(DRIVER_FILE_NAME,true)) {
 		    fileWriter.append(newDriver.getId() + "," 
 		    					+ newDriver.getFirstName() + ","
 		    					+ newDriver.getLastName() + ","
@@ -78,28 +66,23 @@ public class DriverService {
 		    					+ newDriver.getCreationDate() + "\n"
 		    );
 		} catch (IOException e) {
+			logger.error("error writing to file",e);
 			e.printStackTrace();
 		}
 	}
 	
-	public long generateNextSequenceId(List<Driver> drivers) {
+	private long generateNextSequenceId(List<Driver> drivers) {
 		List<Long> idList = drivers.stream()
 				.map(d -> d.getId())
 				.collect(Collectors.toList());
-		System.out.println("sequence from file = " + idList);
 		long sequenceId = idList.isEmpty() ? 0: idList.get(idList.size() -1 );
-		System.out.println("sequence id = " + sequenceId);
 		++ sequenceId;
-		System.out.println("next sequence id = " + sequenceId);
 		return sequenceId;
 	}
 
-	public List<Driver> GetAllDriversAfterGivenDate(String date, List<Driver> drivers) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate beforeDate = LocalDate.parse(date,formatter);
-		
-		List<Driver> driversByAge = drivers.stream()
-				.filter(d -> d.getDateOfBirth().isAfter(beforeDate))
+	public List<Driver> GetAllDriversAfterGivenDate(String beforeDate) {
+		List<Driver> driversByAge = getDrivers().stream()
+				.filter(d -> d.getDateOfBirth().isAfter(stringToDate(beforeDate)))
 				.collect(Collectors.toList());
 		return driversByAge;
 	}

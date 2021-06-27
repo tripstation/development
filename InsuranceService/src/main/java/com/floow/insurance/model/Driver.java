@@ -21,6 +21,14 @@ public class Driver {
 		this.dateOfBirth = dateOfBirth;
 		this.creationDate = creationDate;
 	}
+	
+
+	public Driver(String firstName, String lastName, LocalDate dateOfBirth) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.dateOfBirth = dateOfBirth;
+	}
 
 	public long getId() {
 		return id;
@@ -67,6 +75,4 @@ public class Driver {
 		return "Driver [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", dateOfBirth="
 				+ dateOfBirth + ", creationDate=" + creationDate + "]";
 	}
-	
-	
 }
